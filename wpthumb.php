@@ -653,10 +653,11 @@ function wpthumb_post_image( $null, $id, $args ) {
 	if ( ! $image->errored() ) {
 
 		$image_src = $image->returnImage();
+		$image_cache_path = $image->getCacheFilePath();
 
 		$crop = (bool) ( empty( $crop ) ) ? false : $crop;
 
-		if ( ! $image->errored() && $image_meta = @getimagesize( $image->getCacheFilePath() ) ) :
+		if ( ! $image->errored() && !empty( $image_cache_path ) && $image_meta = @getimagesize( $image_cache_path ) ) :
 
 			$html_width = $image_meta[0];
 			$html_height = $image_meta[1];
