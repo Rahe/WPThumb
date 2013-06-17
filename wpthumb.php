@@ -81,8 +81,7 @@ class WP_Thumb {
 	 */
 	public function __construct( $file_path = null, $args = array() ) {
 
-		if ( $file_path )
-			$this->setFilePath( $file_path );
+		$this->setFilePath( $file_path );
 
 		if ( $args )
 			$this->setArgs( $args );
@@ -122,7 +121,7 @@ class WP_Thumb {
 			$this->file_path = str_replace( trailingslashit( home_url() ), self::get_home_path(), $file_path );
 
 		// if it's a local path, lets check it now
-		if ( strpos( $this->file_path , '/' ) === 0 && strpos( $this->file_path , '//' ) !== 0 && ! file_exists( $this->file_path ) )
+		if ( empty( $this->file_path ) || ( strpos( $this->file_path , '/' ) === 0 && strpos( $this->file_path , '//' ) !== 0 && ! file_exists( $this->file_path ) ) )
 			$this->error = new WP_Error( 'file-not-found' );
 	}
 
@@ -653,11 +652,10 @@ function wpthumb_post_image( $null, $id, $args ) {
 	if ( ! $image->errored() ) {
 
 		$image_src = $image->returnImage();
-		$image_cache_path = $image->getCacheFilePath();
 
 		$crop = (bool) ( empty( $crop ) ) ? false : $crop;
 
-		if ( ! $image->errored() && !empty( $image_cache_path ) && $image_meta = @getimagesize( $image_cache_path ) ) :
+		if ( ! $image->errored() && $image_meta = @getimagesize( $image->getCacheFilePath() ) ) :
 
 			$html_width = $image_meta[0];
 			$html_height = $image_meta[1];
